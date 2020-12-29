@@ -3,11 +3,14 @@ let form=document.getElementById('myForm')
 let input=document.getElementById('input')
 let submit=document.getElementById('submit')
 let location1=document.getElementById('location')
+const fileSelector = document.getElementById('file-selector');
+const img=document.getElementById('image')
 let messagetemp=document.getElementById('message-template').innerHTML
 let messageBox=document.getElementById('messageBox')
 let locationtemp=document.getElementById('location-template').innerHTML
 let sidebar=document.getElementById('sidebar')
 let sidebartemp=document.getElementById('sidebar-template').innerHTML
+let imagetemp=document.getElementById('image-template').innerHTML
 
 const {username,room}=Qs.parse(location.search,{ ignoreQueryPrefix:true})
 const autoscroll = () => {
@@ -31,6 +34,12 @@ const autoscroll = () => {
 
 socket.on('transferlocation',(loca)=>{
   let html=Mustache.render(locationtemp,{username:loca.username,url:loca.url,createdAt:moment(loca.createdAt).format('h:m a')});
+    messageBox.insertAdjacentHTML('beforeEnd',html)
+    autoscroll()
+})
+
+socket.on('transferImage',(image)=>{
+  let html=Mustache.render(imagetemp,{username:image.username,src:image.src,createdAt:moment(image.createdAt).format('h:m a')});
     messageBox.insertAdjacentHTML('beforeEnd',html)
     autoscroll()
 })
@@ -81,6 +90,19 @@ location1.addEventListener('click',(e)=>{
   })
 })
 
+fileSelector.addEventListener('change', (event) => {
+  fileSelector.setAttribute('disabled','disabled')
+  const fileList = event.target.files;
+  const reader = new FileReader();
+  reader.addEventListener('load', (event) => {   //run code when the load event is fired i.e file is loaded
+    const file=event.target.result;
+    socket.emit('image',file,()=>{  //event.target is very important givces us access to the object where everyting is stored
+      console.log('image shared');
+      fileSelector.removeAttribute('disabled')
+    });
+  });
+  reader.readAsDataURL(fileList[0]);
+});
 
 socket.emit('join',{username,room},(error)=>{
   if (error){
