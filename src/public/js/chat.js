@@ -12,7 +12,7 @@ let sidebar=document.getElementById('sidebar')
 let sidebartemp=document.getElementById('sidebar-template').innerHTML
 let imagetemp=document.getElementById('image-template').innerHTML
 
-const {username,room}=Qs.parse(location.search,{ ignoreQueryPrefix:true})
+const {username,room,password,confirm}=Qs.parse(location.search,{ ignoreQueryPrefix:true})
 const autoscroll = () => {
   $messages=messageBox
  // New message element
@@ -104,7 +104,7 @@ fileSelector.addEventListener('change', (event) => {
   reader.readAsDataURL(fileList[0]);
 });
 
-socket.emit('join',{username,room},(error)=>{
+socket.emit('join',{username,room,password,confirm},(error)=>{
   if (error){
     alert(error)
     location.href='/'

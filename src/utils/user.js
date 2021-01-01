@@ -1,8 +1,47 @@
 var users=[];
+var rooms=[];
 
-const addUser=({id,username,room})=>{
+const createRoom=(username,name,password,confirm)=>{
+  name=name.trim().toLowerCase()
+  password=password.trim().toLowerCase()
+  username=username.trim().toLowerCase()
+  confirm=confirm.trim().toLowerCase()
+
+  if (!name||!password||!username||!confirm) {
+    return {
+      error:'All Fields are required'
+    };
+  }
+  if(confirm!==password){
+    return {
+      error:'Passwords do not match'
+    };
+  }
+  const existingRoom=rooms.find((roomarr)=>{
+    return roomarr.name===name;
+  })
+  if(existingRoom){
+    return {
+      error:'Room Name Already Exists'
+    };
+  }
+  const roomarr={name,password}
+  rooms.push(roomarr)
+  return { roomarr } ;
+
+}
+
+const deleteRoom=(roomName)=>{
+  const index=rooms.findIndex((roomArr)=>roomArr.name===roomName)
+  if(index!==-1){
+    rooms.splice(index,1)
+  }
+}
+
+const addUser=({id,username,room,password})=>{
   username=username.trim().toLowerCase()
   room=room.trim().toLowerCase()
+  password=password.trim().toLowerCase()
   if (!username||!room) {
     return {
       error:'Username and Room are required'
@@ -17,6 +56,22 @@ const addUser=({id,username,room})=>{
     return {
       error: 'Username in use'
     }
+  }
+  const checkForRoom=rooms.find((roomArr)=>{
+    return roomArr.name===room;
+  })
+  if(!checkForRoom){
+    return {
+      error: 'Room Doesnt Exist'
+    };
+  }
+  const correctPassword=rooms.find((roomarr)=>{
+     return roomarr.name===room&&roomarr.password===password
+  })
+  if(!correctPassword){
+    return {
+      error:'Incorrect Password'
+    };
   }
 
   const user={id,username,room}
@@ -42,10 +97,11 @@ const getUsersInRoom=(room)=>{
   return usersInRoom;
 }
 
-
 module.exports={
   addUser,
   removeUser,
   getUsersInRoom,
-  getUser
+  getUser,
+  createRoom,
+  deleteRoom
 }

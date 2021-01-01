@@ -61,21 +61,38 @@ button:disabled {
 .centered-form {
     background: #333744;
     width: 100vw;
-    height: 100vh;   
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
+.container{
+  display: inline-flex;
+  overflow:hidden;
+  max-width:400px;
+  margin: 0;
+  padding: 0;
+  background: #333744;
+}
 .centered-form__box {
     box-shadow: 0px 0px 17px 1px #1D1F26;
     background: #F7F7FA;
     padding: 24px;
-    width: 250px;
+    min-width: 400px;
 }
-
+.shiftdown{
+  transform: translateX(-400px);
+  transition-property: transform;
+  transition-duration: 0.5s;
+}
+.shiftup{
+  transform: translateX(0);
+  transition-property: transform;
+  transition-duration: 0.5s;
+}
 .centered-form button {
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .centered-form input {
@@ -115,7 +132,7 @@ button:disabled {
 /* Message Styles */
 
 .message {
-    margin-bottom: 16px;   
+    margin-bottom: 16px;
 }
 
 .message__name {
@@ -166,7 +183,7 @@ button:disabled {
     font-weight: 400;
     font-size: 22px;
     background: #2c2f3a;
-    padding: 24px;   
+    padding: 24px;
 }
 
 .list-title {
