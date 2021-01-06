@@ -28,9 +28,10 @@
           <input type="file" id="file-selector" accept=".jpg, .jpeg, .png" required>       <!-- accept attribute limits the type of files -->
            <!--  <button type="submit" name="button" id="submitImage">Send</button> -->
           </form>
+          <button type="button" id="start">Start Recording</button>
+          <button type="button" id="stop" disabled>Stop Recording</button>
           <button type="button" id="location">Send Location</button>
         </div>
-
       </div>
 
     </div>
@@ -75,6 +76,15 @@
         <img src='{{src}}' id="image">
       </div>
 
+    </script>
+    <script type="text/html" id="audio-template">
+      <div class="message">
+        <p>
+          <span class="message__name">{{username}}</span>
+          <span class="message__meta">{{createdAt}}</span>
+        </p>
+        <audio src='{{src}}' controls="true"></audio>
+      </div>
     </script>
 
 

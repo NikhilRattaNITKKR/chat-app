@@ -6,6 +6,7 @@ const Filter = require('bad-words');
 const  { generateMessage }= require('./utils/message');
 const  { generateLocationMessage }= require('./utils/message');
 const  { generateImageMessage }= require('./utils/message');
+const  { generateAudioMessage }= require('./utils/message');
 const { addUser,removeUser,getUser,getUsersInRoom,deleteRoom,createRoom }=require('./utils/user')
 const app=express()
 const server=http.createServer(app)  //express creates a server by default but here we need it so we are declaring it implicitly
@@ -64,6 +65,12 @@ socket.on('sendMessage',(message,callback)=>{
     const user=getUser(socket.id)
     io.to(user.room).emit('transferImage',generateImageMessage(user.username,file))
     callback()
+  })
+
+  socket.on('audio',(file,callback)=>{
+    const user=getUser(socket.id)
+    io.to(user.room).emit('transferAudio',generateAudioMessage(user.username,file))
+    callback();
   })
 
   socket.on('disconnect',()=>{

@@ -5,12 +5,15 @@ let submit=document.getElementById('submit')
 let location1=document.getElementById('location')
 const fileSelector = document.getElementById('file-selector');
 const img=document.getElementById('image')
+const startBtn=document.getElementById('start')
+const stopBtn=document.getElementById('stop')
 let messagetemp=document.getElementById('message-template').innerHTML
 let messageBox=document.getElementById('messageBox')
 let locationtemp=document.getElementById('location-template').innerHTML
 let sidebar=document.getElementById('sidebar')
 let sidebartemp=document.getElementById('sidebar-template').innerHTML
 let imagetemp=document.getElementById('image-template').innerHTML
+let audiotemp=document.getElementById('audio-template').innerHTML
 
 const {username,room,password,confirm}=Qs.parse(location.search,{ ignoreQueryPrefix:true})
 const autoscroll = () => {
@@ -43,6 +46,13 @@ socket.on('transferImage',(image)=>{
     messageBox.insertAdjacentHTML('beforeEnd',html)
     autoscroll()
 })
+
+socket.on('transferAudio',(audio)=>{
+  let html=Mustache.render(audiotemp,{username:audio.username,src:audio.src,createdAt:moment(audio.createdAt).format('h:m a')});
+    messageBox.insertAdjacentHTML('beforeEnd',html)
+    autoscroll()
+})
+
 
 socket.on('message',(msg)=>{
   let html=Mustache.render(messagetemp,{username:msg.username,message:msg.message,createdAt:moment(msg.createdAt).format('h:m a')});    //using the mustache library to render the template
@@ -103,6 +113,39 @@ fileSelector.addEventListener('change', (event) => {
   });
   reader.readAsDataURL(fileList[0]);
 });
+
+startBtn.addEventListener('click',(event)=>{
+startBtn.setAttribute('disabled','disabled');
+stopBtn.removeAttribute('disabled');
+
+navigator.mediaDevices.getUserMedia({audio:true})
+.then((stream)=>{
+let audio=[];
+  rec=new MediaRecorder(stream);
+ rec.start();
+
+ rec.addEventListener('dataavailable',(e)=>{
+  audio.push(e.data);
+  if (rec.state == "inactive"){
+           let tracks=stream.getTracks();
+           tracks.forEach(function(track) {
+           track.stop();
+           });
+           let blob = new Blob(audio,{type:'audio/mpeg-3'});  //converts it into playable form
+           audio=[];
+           socket.emit('audio',URL.createObjectURL(blob),()=>{
+             console.log('audio shared');
+     })
+    }
+  })
+ })
+})
+stopBtn.addEventListener('click',(event)=>{
+  event.stopPropagation()
+  stopBtn.setAttribute('disabled','disabled');
+  startBtn.removeAttribute('disabled');
+  rec.stop(); //how is this defined
+})
 
 socket.emit('join',{username,room,password,confirm},(error)=>{
   if (error){
